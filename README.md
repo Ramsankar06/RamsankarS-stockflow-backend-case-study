@@ -1,6 +1,7 @@
 # StockFlow Case Study Solution
 
 **Candidate:** Ramsankar S
+
 **Position:** Backend Engineering Intern  
 **Date:** April 7, 2026
 
