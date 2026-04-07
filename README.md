@@ -76,9 +76,6 @@ db.session.commit()  # Single atomic transaction
 4. **Generated column** - `available_quantity = quantity - reserved_quantity`
 5. **Indexes on foreign keys** - Optimizes common joins
 
-### Questions for Product Team 
-Identified missing requirements around user management, product variations, multi-currency support, and more.
-
 
 ## Part 3: API Implementation
 
