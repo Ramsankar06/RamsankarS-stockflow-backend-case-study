@@ -1,108 +1,94 @@
 # StockFlow Case Study Solution
 
-**Candidate:** Ramsankar S
-
+**Candidate:** Ramsankar S  
 **Position:** Backend Engineering Intern  
-**Date:** April 7, 2026
+**Date:** April 7, 2026  
+
+---
 
 ## Overview
 
-This repository contains my solutions for the StockFlow B2B Inventory Management System case study. The case study evaluated my ability to:
-- Debug and improve existing code
-- Design scalable database schemas
-- Implement complex API endpoints
-- Work with incomplete requirements
+This repository contains my solution for the StockFlow B2B Inventory Management System case study.
+
+I approached this problem by first understanding the business requirements and then implementing simple and correct backend solutions. My focus was on data consistency, proper validation, and clear API design.
+
+---
 
 ## Repository Structure
+├── README.md
+├── part1_code_review.md
+├── part2_database_design.sql
+├── part3_api_implementation.py
 
-```
-├── README.md                          # This file
-├── part1_code_review.md              # Code review, issues, and fixes
-├── part2_database_design.sql         # Database schema design
-├── part3_api_implementation.py       # Low-stock alerts API
-```
+
+---
 
 ## Part 1: Code Review & Debugging
 
 **File:** `part1_code_review.md`
 
 ### Issues Identified
-1. No input validation
-2. No error handling
-3. Missing SKU uniqueness check
-4. Multiple commits causing data inconsistency
-5. No decimal handling for price
-6. Business logic flaw (product tied to single warehouse)
-7. Missing HTTP status codes
+- No input validation  
+- No error handling  
+- Missing SKU uniqueness check  
+- Multiple commits causing data inconsistency  
+- Price not properly handled  
+- Incorrect product-warehouse relationship  
+- Missing HTTP status codes  
 
 ### Key Fix
-Changed from two separate commits to a single atomic transaction, preventing orphaned products.
 
-**Before:**
-```python
-db.session.add(product)
-db.session.commit()  # First commit
-db.session.add(inventory)
-db.session.commit()  # Second commit - could fail!
-```
+The main issue was using multiple commits. I fixed this by using a single transaction so that both product and inventory are created together.
 
-**After:**
-```python
-db.session.add(product)
-db.session.add(inventory)
-db.session.commit()  # Single atomic transaction
-```
-
+---
 
 ## Part 2: Database Design
 
 **File:** `part2_database_design.sql`
 
-### Tables Designed (10 total)
-- `companies` - Multi-tenant support
-- `warehouses` - Multiple locations per company
-- `products` - Items being tracked
-- `inventory` - Product quantities per warehouse
-- `inventory_changes` - Audit trail
-- `suppliers` - Vendor management
-- `product_suppliers` - Many-to-many linking
-- `bundle_components` - Product bundles
-- `sales` - Sales history for velocity calculation
+### Tables Used
+- `companies`
+- `warehouses`
+- `products`
+- `inventory`
+- `suppliers`
+- `product_suppliers`
 
 ### Key Design Decisions
-1. **Separate inventory table** - Supports products in multiple warehouses
-2. **Audit trail** - `inventory_changes` for regulatory compliance
-3. **DECIMAL for money** - Prevents floating-point errors
-4. **Generated column** - `available_quantity = quantity - reserved_quantity`
-5. **Indexes on foreign keys** - Optimizes common joins
 
+- Used a separate **inventory table** to support products in multiple warehouses  
+- Kept SKU unique to avoid duplicate products  
+- Used simple relationships to keep the design clean and scalable  
+
+---
 
 ## Part 3: API Implementation
 
 **File:** `part3_api_implementation.py`
 
-### Endpoint Implemented
-```
-GET /api/companies/{company_id}/alerts/low-stock
-```
+### Approach
 
-### Business Rules Applied
-- Only alert for products with sales in last 30 days
-- Calculate days until stockout based on average daily sales
-- Include primary supplier for reordering
-- Sort by urgency (lowest days remaining first)
+- Fetch all warehouses for a company  
+- Get inventory for those warehouses  
+- Identify products where stock is below a threshold  
+- Include supplier information for reordering  
 
-### Edge Cases Handled 
-- Products with no recent sales
-- Products with zero sales velocity
-- Multiple warehouses per product
-- Products with no supplier
-- Time zone considerations
-- Reserved inventory (pending orders)
+### Assumptions
 
-### Query Optimization
-- Single complex SQL query instead of multiple round trips
-- Uses database indexes effectively
-- Filters in SQL, not Python
+- Threshold is fixed (for simplicity)  
+- Sales data is not included due to limited requirements  
+- One supplier is used per product  
+
+---
+
+## Conclusion
+
+I focused on building a clean and understandable solution by applying backend concepts I am familiar with (from Spring Boot) into Flask. 
+
+Instead of overcomplicating the design, I prioritized correctness, clarity, and alignment with the given requirements.
+
+---
 
 **Submitted:** April 7, 2026
+
+### Endpoint
