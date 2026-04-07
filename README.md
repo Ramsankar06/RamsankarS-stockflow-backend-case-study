@@ -10,7 +10,7 @@
 
 This repository contains my solution for the StockFlow B2B Inventory Management System case study.
 
-I approached this problem by first understanding the business requirements and then implementing simple and correct backend solutions. My focus was on data consistency, proper validation, and clear API design.
+I approached this problem by first understanding the business requirements and then implementing simple and reliable backend solutions. My focus was on data consistency, proper validation, and keeping the design easy to understand.
 
 ---
 
@@ -28,6 +28,7 @@ I approached this problem by first understanding the business requirements and t
 **File:** `part1_code_review.md`
 
 ### Issues Identified
+
 - No input validation  
 - No error handling  
 - Missing SKU uniqueness check  
@@ -36,9 +37,20 @@ I approached this problem by first understanding the business requirements and t
 - Incorrect product-warehouse relationship  
 - Missing HTTP status codes  
 
+### Explanation
+
+The original API could fail in multiple ways, especially due to missing validation and the use of multiple database commits.
+
+The most critical issue was data inconsistency. If the product was created successfully but inventory creation failed, the system would end up with incomplete data.
+
 ### Key Fix
 
-The main issue was using multiple commits. I fixed this by using a single transaction so that both product and inventory are created together.
+I solved this by:
+
+- Adding input validation  
+- Ensuring SKU uniqueness  
+- Adding proper error handling  
+- Using a **single transaction** so both product and inventory are created together  
 
 ---
 
@@ -47,6 +59,7 @@ The main issue was using multiple commits. I fixed this by using a single transa
 **File:** `part2_database_design.sql`
 
 ### Tables Used
+
 - `companies`
 - `warehouses`
 - `products`
@@ -54,11 +67,25 @@ The main issue was using multiple commits. I fixed this by using a single transa
 - `suppliers`
 - `product_suppliers`
 
+### Explanation
+
+The main challenge was supporting products across multiple warehouses.
+
+To solve this, I used a separate **inventory table** that connects products and warehouses and stores quantity.
+
 ### Key Design Decisions
 
-- Used a separate **inventory table** to support products in multiple warehouses  
-- Kept SKU unique to avoid duplicate products  
-- Used simple relationships to keep the design clean and scalable  
+- Inventory table handles product-warehouse relationship  
+- SKU is kept unique to avoid duplicates  
+- Simple schema to keep it scalable and easy to maintain  
+
+### Missing Requirements
+
+Some requirements were not clearly defined, so I would clarify:
+
+- How is low-stock threshold defined?  
+- What is considered “recent sales”?  
+- Can a product exist without a supplier?  
 
 ---
 
@@ -66,29 +93,37 @@ The main issue was using multiple commits. I fixed this by using a single transa
 
 **File:** `part3_api_implementation.py`
 
+### Endpoint
+GET /api/companies/{company_id}/alerts/low-stock
+
+
 ### Approach
 
-- Fetch all warehouses for a company  
-- Get inventory for those warehouses  
-- Identify products where stock is below a threshold  
-- Include supplier information for reordering  
+1. Fetch all warehouses for the company  
+2. Get inventory for those warehouses  
+3. Check if stock is below a threshold  
+4. Include supplier information for reordering  
 
 ### Assumptions
 
-- Threshold is fixed (for simplicity)  
-- Sales data is not included due to limited requirements  
+- Threshold is fixed for simplicity  
+- Sales data is not included  
 - One supplier is used per product  
+
+### Edge Cases Considered
+
+- Company has no warehouses  
+- Product has no supplier  
+- Inventory quantity is zero  
 
 ---
 
 ## Conclusion
 
-I focused on building a clean and understandable solution by applying backend concepts I am familiar with (from Spring Boot) into Flask. 
+This case study helped me apply backend concepts like validation, database design, and API development in a practical scenario.
 
-Instead of overcomplicating the design, I prioritized correctness, clarity, and alignment with the given requirements.
+I focused on building a clean and understandable solution rather than overcomplicating it, while still ensuring it meets the given requirements.
 
 ---
 
 **Submitted:** April 7, 2026
-
-### Endpoint
